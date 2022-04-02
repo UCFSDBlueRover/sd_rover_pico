@@ -305,7 +305,7 @@ void comm_run()
     // configure LoRa
     initLora(rx_buffer);
     
-    while (1)
+    /*while (1)
     { 
         // poll rx fifo
         read(rx_buffer, 1000);
@@ -339,5 +339,5 @@ void comm_run()
                 }
             }
         }
-    }
+    }*/
 }

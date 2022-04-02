@@ -273,10 +273,59 @@ int main()
     // set_PWM(true, 65, false, 0);
     
     // spin
+
+    int a = 0;
+    int b = 1;
+    int x = 2;
+    int countTick = 0;
+    int countIndex = 0;
+    char precTick = 0;
+    char precIndex = 0;
+    char tick = 0;
+    char tickB =0;
+    char index = 0;
+    gpio_init(a);
+    gpio_init(b);
+    gpio_init(x);
+    gpio_set_dir(a, GPIO_IN);
+    gpio_set_dir(b, GPIO_IN);
+    gpio_set_dir(x, GPIO_IN);
+    absolute_time_t timer;
+    timer = make_timeout_time_ms(1000);
+
     while (1)
     {
-        // printf("I'M ALIVE...\n");
-        if (queue_try_remove(&receive_queue, received_data)) 
+	tick = gpio_get(a);
+	tickB = gpio_get(b);
+	index = gpio_get(x);
+
+	if(tick != precTick) {
+	    if(tick != tickB) {
+	        countTick = countTick + tick;
+		precTick = tick;
+	    } else {
+	        countTick = countTick - tick;
+		precTick = tick;
+	    }
+	    printf("tick: %d\n", countTick);
+	}
+	
+	if(index != precIndex) {
+	    if(countTick > 0) {
+	        countIndex = countIndex + index;
+		precIndex = index;
+	    } else {
+	        countIndex = countIndex - index;
+		precIndex = index;
+	    }
+	    countTick = 0;
+	    printf("turn: %d\n", countIndex);
+	}
+	if(time_reached(timer)) {
+	    printf("RPM: %d\n", (countTick / 48));
+	    timer = make_timeout_time_ms(1000);
+	}
+        /*if (queue_try_remove(&receive_queue, received_data)) 
         {
             // everything from CORE 1 is a $CMD
             printf("CORE 0 RECEIVED DATA: %s\n", received_data); 
@@ -288,6 +337,7 @@ int main()
         {
             printf("CORE 0 SENT DATA\n"); 
         }
+	
         // attempt to read char from stdin
         // no timeout makes it non-blocking
         ch = getchar_timeout_us(0);
@@ -313,6 +363,6 @@ int main()
         }
 
         // sleep_ms(10);
-        // tight_loop_contents();
+        // tight_loop_contents();*/
     }
 }
