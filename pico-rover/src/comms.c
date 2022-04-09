@@ -85,13 +85,19 @@ void protocol(STATE *state, char *in, char *out)
             } else if (strcmp(flag, "ACK") == 0) {
                 //if(queue_try_add(&receive_queue, in)) printf("CORE 1: SENT DATA\n");
                 strcpy(out, "ACK");
-                if(queue_try_remove(&transmit_queue, data)) printf("CORE 1: RECEIVED DATA: %s\n", data);
-                strcat(strcat(out, " "), data);
+                if (queue_try_remove(&transmit_queue, data)) 
+                {
+                    printf("CORE 1: RECEIVED DATA: %s\n", data);
+                    strcat(strcat(out, " "), data);
+                }
             } else if (strcmp(flag, "$CMD") == 0) {
                 if(queue_try_add(&receive_queue, in)) printf("CORE 1: SENT DATA\n");
                 strcpy(out, "ACK");
-                if(queue_try_remove(&transmit_queue, data)) printf("CORE 1: RECEIVED DATA: %s\n", data);
-                strcat(strcat(out, " "), data);
+                if (queue_try_remove(&transmit_queue, data)) 
+                {
+                    printf("CORE 1: RECEIVED DATA: %s\n", data);
+                    strcat(strcat(out, " "), data);
+                }   
             }
             break;
         case LASTACK:
@@ -352,7 +358,7 @@ void comm_run()
                     // retransmit last message
                     msgTx(&state, tx_buffer);
                     // restart timer
-                    timer = make_timeout_time_ms(5000);
+                    timer = make_timeout_time_ms(10000);
                 }
             }
         }
