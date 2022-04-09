@@ -278,6 +278,7 @@ int main()
         printf("Failed to add timer\n");
         return EXIT_FAILURE;
     }
+
     // configure GPIO for tachometer
     // gpio_set_function(28, GPIO_FUNC_SIO); // pin 34 == GPIO26
     // gpio_set_dir(28, GPIO_IN);
@@ -301,10 +302,11 @@ int main()
             strcat(cmd, received_data);
             handle_input(cmd);
         }
-        if (!queue_try_add(&transmit_queue, sent_data)) 
-        {
-            printf("$ERR Failed to add data to transmit queue: %s\n", sent_data); 
-        }
+        // if (!queue_try_add(&transmit_queue, sent_data)) 
+        // {
+        //     printf("$ERR Failed to add data to transmit queue: %s\n", sent_data); 
+        // }
+
         // attempt to read char from stdin
         // no timeout makes it non-blocking
         ch = getchar_timeout_us(0);
