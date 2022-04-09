@@ -295,6 +295,10 @@ int main()
     // spin
     while (1)
     {
+        // provide encoder updates (tickCounts should be updated by timer)
+        printf("$ENC 1 %d 2 %d \n", enc1.tickCount, enc2.tickCount);
+
+        // check if LoRa data is available to process
         if (queue_try_remove(&receive_queue, received_data)) 
         {
             // everything from CORE 1 is a $CMD
