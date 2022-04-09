@@ -1,7 +1,7 @@
 /**
  * @file motors.h
- * @author your name (you@domain.com)
- * @brief 
+ * @author Wesley Fletcher (wkfletcher@knights.ucf.edu)
+ * @brief defs and function prototypes for motors.c
  * @version 0.1
  * @date 2022-03-13
  * 
@@ -26,14 +26,13 @@
 #define ENC_2_PIN_A         00
 #define ENC_2_PIN_B         00
 
+// tracks state of each encoder
 typedef struct ENC_STATE
 {
-    int channelA;
-    int channelB;
-
+    uint channelA;       // which pin to poll for CHAN A
+    uint channelB;       // which pin to poll for CHAN B
     int previousTick;
-    int tickCount;
-
+    int tickCount;      // total tick count, can be + or -
 } ENC_STATE;
 
 // function prototypes

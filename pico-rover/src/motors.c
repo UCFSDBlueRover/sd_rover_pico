@@ -94,7 +94,7 @@ int configure_PWM()
     uint slice2 = pwm_gpio_to_slice_num(PWM_2_PIN);
     if (slice1 != slice2)
     {
-        printf("ERROR: PWM slice mismatch, slice1: %d, slice2: %d", slice1, slice2);
+        printf("$ERR PWM slice mismatch, slice1: %d, slice2: %d", slice1, slice2);
         return EXIT_FAILURE;
     }
 
