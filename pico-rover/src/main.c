@@ -291,6 +291,7 @@ int main()
     // gpio_init(LED_PIN);
     // gpio_set_dir(LED_PIN, GPIO_OUT);
 
+    hz = 10;
     // spin
     while (1)
     {
@@ -331,7 +332,7 @@ int main()
             ch = getchar_timeout_us(0);
         }
 
-        sleep_ms(20);
+        sleep_ms(1000 / hz);
         // tight_loop_contents();
     }
 }
