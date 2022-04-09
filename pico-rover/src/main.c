@@ -194,6 +194,18 @@ int handle_input(char *in)
         // transmit over UART
         return EXIT_SUCCESS;
     }
+    // TLM messages are meant to be transmitted, need to be added to queue
+    else if (strcmp(token, MSG_TLM) == 0)
+    {        
+        token = strtok(NULL, delim);
+        if (!queue_try_add(&transmit_queue, token)) 
+        {
+            printf("$ERR Failed to add $TLM message to transmit queue: %s\n", token); 
+            return EXIT_FAILURE;
+        }
+        return EXIT_SUCCESS;
+        
+    }
 
     // something went wrong
     return EXIT_FAILURE;

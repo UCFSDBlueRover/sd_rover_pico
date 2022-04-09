@@ -18,6 +18,7 @@
 // message definitions
 static const char * MSG_MOTORS = "$MTR\0";      // command for motor controller
 static const char * MSG_TX     = "$TXR\0";      // transmit a string on the LoRa
+static const char * MSG_TLM    = "$TLM\0";
 static const char * MSG_CMD    = "$CMD\0";      // generic command, passed to SBC through serial
 static const char * MSG_REQ    = "$REQ\0";      // a request for data update, new rate, etc...
 static const char * MSG_ACK    = "$ACK\0";      // an acknowledgement that a message was received
