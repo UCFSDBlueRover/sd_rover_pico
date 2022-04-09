@@ -19,12 +19,33 @@
 #define DIR_1_PIN           18
 #define DIR_2_PIN           19
 
+// encoder definitions
+// TODO: update these
+#define ENC_1_PIN_A         00
+#define ENC_1_PIN_B         00
+#define ENC_2_PIN_A         00
+#define ENC_2_PIN_B         00
+
+typedef struct ENC_STATE
+{
+    int channelA;
+    int channelB;
+
+    int previousTick;
+    int tickCount;
+
+} ENC_STATE;
+
 // function prototypes
 void right_enc_callback(uint gpio, uint32_t events);
 int configure_PWM();
 float get_vel_left();
 float get_vel_right();
 void set_PWM(bool left_dir, int left_speed, bool right_dir, int right_speed);
+
+// encoders
+void encoder_update(ENC_STATE *encoder);
+bool enc_timer_callback(repeating_timer_t *rt);
 
 int64_t getEncCounter();
 

@@ -260,6 +260,24 @@ int main()
         return EXIT_FAILURE;
     }
 
+    // configure encoders
+    // ENC_STATE variables will be updated via timer
+    ENC_STATE enc1 = {.channelA = ENC_1_PIN_A,
+                      .channelB = ENC_1_PIN_B,
+                      .tickCount = 0};
+    ENC_STATE enc2 = {.channelA = ENC_2_PIN_A,
+                      .channelB = ENC_2_PIN_B,
+                      .tickCount = 0};
+    void *encoders[] = {&enc1, &enc2};    // stores encoders in single place for timer callback
+
+    // configure a timer to update encoders at specified freq (Hz)
+    int hz = 20;
+    repeating_timer_t timer;
+    // negative timeout means exact delay (rather than delay between callbacks)
+    if (!add_repeating_timer_us(-1000000 / hz, enc_timer_callback, &encoders, &timer)) {
+        printf("Failed to add timer\n");
+        return EXIT_FAILURE;
+    }
     // configure GPIO for tachometer
     // gpio_set_function(28, GPIO_FUNC_SIO); // pin 34 == GPIO26
     // gpio_set_dir(28, GPIO_IN);

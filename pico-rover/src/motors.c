@@ -23,6 +23,59 @@
 #include "motors.h"
 
 /**
+ * @brief Updates an ENC_STATE struct based on current state of encoder GPIOs;
+ *        Intended to be called in a loop (for now)
+ * 
+ * @param encoder pointer to a ENC_STATE struct to be updated
+ */
+void encoder_update(ENC_STATE *encoder)
+{
+    int tickA, tickB;
+
+    // read current tick states
+    tickA = gpio_get(encoder->channelA);
+    
+    // if GPIO state has changed, update tickCount
+    if (tickA != encoder->previousTick)
+    {
+        tickB = gpio_get(encoder->channelB);
+
+        // forward movement
+        if (tickA != tickB)
+        {
+            encoder->tickCount += tickA;
+        }
+        // backwards movement
+        else
+        {
+            encoder->tickCount -= tickA;
+        }
+        encoder->previousTick = tickA;
+    }
+}
+
+/**
+ * @brief Timer callback that updates encoder information
+ * 
+ * @param rt the repeating_timer_t struct that contains our encoder data (in user_data)
+ * @return true continue with this timer
+ * @return false stop this timer
+ */
+bool enc_timer_callback(repeating_timer_t *rt)
+{
+    // get encoders from user_data of rpeating_timer_t struct
+    void **encoders = (void **) rt->user_data;
+    ENC_STATE *enc1 = (ENC_STATE *) encoders[0];
+    ENC_STATE *enc2 = (ENC_STATE *) encoders[1];
+
+    // udpate each encoder
+    encoder_update(enc1);
+    encoder_update(enc2);
+
+    return true;
+}
+
+/**
  * @brief 
  * 
  * @return int 
