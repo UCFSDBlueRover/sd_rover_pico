@@ -29,7 +29,7 @@
  */
 int configure_PWM()
 {
-    // configure PWM pins for PWM
+    // configure PWM pins as PWM
     gpio_set_function(PWM_1_PIN, GPIO_FUNC_PWM);
     gpio_set_function(PWM_2_PIN, GPIO_FUNC_PWM);
 
@@ -72,9 +72,9 @@ int configure_PWM()
  * @brief 
  * 
  * @param left_dir true for forward, false for reverse
- * @param left_speed 0-100
+ * @param left_speed 0-100, "full-stop"-> "max-go"
  * @param right_dir true for forward, false for reverse
- * @param right_speed 0-100
+ * @param right_speed 0-100, "full-stop"-> "max-go"
  */
 void set_PWM(bool left_dir, int left_speed, bool right_dir, int right_speed)
 {

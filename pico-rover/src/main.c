@@ -1,3 +1,14 @@
+/**
+ * @file main.c
+ * @author Wesley Fletcher (wkfletcher@knights.ucf.edu)
+ * @brief main entrypoint to the peripheral MCU program
+ * @version 0.1
+ * @date 2022-04-09
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include "main.h"
 #include "../include/definitions.h"
 #include "../include/comms.h"
@@ -235,12 +246,13 @@ int main()
         // return EXIT_FAILURE;
     }
 
-    // init inter-core queues
+    // init inter-core queues for LoRa communication
     queue_init(&receive_queue, LORA_SIZE, 5);
     queue_init(&transmit_queue, LORA_SIZE, 5);
     // Start core 1 - Do this before any interrupt configuration
     multicore_launch_core1(comm_run); 
 
+    // configure PWM for motor controller
     status = configure_PWM();
     if (status)
     {
