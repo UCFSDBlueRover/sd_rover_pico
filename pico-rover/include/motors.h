@@ -21,8 +21,8 @@
 
 // encoder definitions
 // TODO: update these
-#define ENC_1_PIN_A         00
-#define ENC_1_PIN_B         00
+#define ENC_1_PIN_A         7
+#define ENC_1_PIN_B         8
 #define ENC_2_PIN_A         00
 #define ENC_2_PIN_B         00
 
