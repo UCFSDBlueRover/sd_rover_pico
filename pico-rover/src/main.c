@@ -197,7 +197,8 @@ int handle_input(char *in)
     // TLM messages are meant to be transmitted, need to be added to queue
     else if (strcmp(token, MSG_TLM) == 0)
     {        
-        token = strtok(NULL, delim);
+        token = strtok(NULL, "");
+        printf("$TLM message: %s\n", token);
         if (!queue_try_add(&transmit_queue, token)) 
         {
             printf("$ERR Failed to add $TLM message to transmit queue: %s\n", token); 
@@ -273,17 +274,30 @@ int main()
     }
 
     // configure encoders
+    // configure GPIO for encoders
+    gpio_set_function(ENC_1_PIN_A, GPIO_FUNC_SIO);
+    gpio_set_function(ENC_1_PIN_B, GPIO_FUNC_SIO);
+    gpio_set_dir(ENC_1_PIN_A, GPIO_IN);
+    gpio_set_dir(ENC_1_PIN_B, GPIO_IN);
+
+    gpio_set_function(ENC_2_PIN_A, GPIO_FUNC_SIO);
+    gpio_set_function(ENC_2_PIN_B, GPIO_FUNC_SIO);
+    gpio_set_dir(ENC_2_PIN_A, GPIO_IN);
+    gpio_set_dir(ENC_2_PIN_B, GPIO_IN);
+
     // ENC_STATE variables will be updated via timer
     ENC_STATE enc1 = {.channelA = ENC_1_PIN_A,
                       .channelB = ENC_1_PIN_B,
+                      .previousTick = 0,
                       .tickCount = 0};
     ENC_STATE enc2 = {.channelA = ENC_2_PIN_A,
                       .channelB = ENC_2_PIN_B,
+                      .previousTick = 0,
                       .tickCount = 0};
     void *encoders[] = {&enc1, &enc2};    // stores encoders in single place for timer callback
 
-    // configure a timer to update encoders at specified freq (Hz)
-    int hz = 20;
+    // // configure a timer to update encoders at specified freq (Hz)
+    int hz = 1000;
     repeating_timer_t timer;
     // negative timeout means exact delay (rather than delay between callbacks)
     if (!add_repeating_timer_us(-1000000 / hz, enc_timer_callback, &encoders, &timer)) {
