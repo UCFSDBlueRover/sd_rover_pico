@@ -205,7 +205,6 @@ int handle_input(char *in)
             return EXIT_FAILURE;
         }
         return EXIT_SUCCESS;
-        
     }
 
     // something went wrong
@@ -348,7 +347,7 @@ int main()
             // if the string ends or we run out of space, we're done with this string
             if (ch == CR || ch == NL || idx == (sizeof(in_string)-1))
             {
-                in_string[idx] = 0; // terminate the string
+                in_string[idx-1] = 0; // terminate the string
                 idx = 0;    // reset index
                 
                 status = handle_input(in_string);
