@@ -138,5 +138,3 @@ void set_PWM(bool left_dir, int left_speed, bool right_dir, int right_speed)
     pwm_set_gpio_level(PWM_2_PIN, (int16_t)right_speed * 125);
 
 }
-
-
