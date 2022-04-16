@@ -22,7 +22,7 @@
 
 /**
  * @brief Updates an ENC_STATE struct based on current state of encoder GPIOs;
- *        Intended to be called in a loop (for now)
+ *        Intended to be called via timer.
  * 
  * @param encoder pointer to a ENC_STATE struct to be updated
  */
@@ -53,7 +53,7 @@ void encoder_update(ENC_STATE *encoder)
 }
 
 /**
- * @brief Timer callback that updates encoder information
+ * @brief Timer callback that updates encoder information using encoder_update()
  * 
  * @param rt the repeating_timer_t struct that contains our encoder data (in user_data)
  * @return true continue with this timer
@@ -74,7 +74,7 @@ bool enc_timer_callback(repeating_timer_t *rt)
 }
 
 /**
- * @brief 
+ * @brief Configures PWM using defs from motors.h
  * 
  * @return int 
  */
@@ -90,6 +90,7 @@ int configure_PWM()
     gpio_set_dir(DIR_1_PIN, GPIO_OUT);
     gpio_set_dir(DIR_2_PIN, GPIO_OUT);
 
+    // set slice
     uint slice1 = pwm_gpio_to_slice_num(PWM_1_PIN);
     uint slice2 = pwm_gpio_to_slice_num(PWM_2_PIN);
     if (slice1 != slice2)
@@ -99,7 +100,7 @@ int configure_PWM()
     }
 
     // set "wrap": number of cycles for each pulse
-    pwm_set_wrap(slice1, 12500);
+    pwm_set_wrap(slice1, PWM_WRAP);
 
     // start PWMs at 0 = STOP
     pwm_set_chan_level(slice1, PWM_CHAN_A, 0);     // right
@@ -107,14 +108,6 @@ int configure_PWM()
 
     // set the PWM running
     pwm_set_enabled(slice1, true);
-
-    // gpio_set_dir(20, GPIO_IN);
-    // gpio_set_dir(21, GPIO_IN);
-
-    // gpio_pull_down(20);
-
-    // prevA = gpio_get(20);
-    // prevB = gpio_get(21);
 
     return EXIT_SUCCESS;
 }
@@ -133,10 +126,9 @@ void set_PWM(bool left_dir, int left_speed, bool right_dir, int right_speed)
     gpio_put(DIR_1_PIN, left_dir);
     gpio_put(DIR_2_PIN, right_dir);
 
-    // set PWM pins
-    pwm_set_gpio_level(PWM_1_PIN, (int16_t)left_speed * 125);
-    pwm_set_gpio_level(PWM_2_PIN, (int16_t)right_speed * 125);
-
+    // set PWM pins, normalizing for the wrap cycle/100
+    pwm_set_gpio_level(PWM_1_PIN, (int16_t)left_speed * (PWM_WRAP / 100));
+    pwm_set_gpio_level(PWM_2_PIN, (int16_t)right_speed * (PWM_WRAP / 100));
 }
 
 

@@ -18,9 +18,9 @@
 #define PWM_2_PIN           17
 #define DIR_1_PIN           18
 #define DIR_2_PIN           19
+#define PWM_WRAP            12500 // number of cycles for PWM pulse
 
 // encoder definitions
-// TODO: update these
 #define ENC_1_PIN_A         27
 #define ENC_1_PIN_B         28
 #define ENC_2_PIN_A         22
@@ -36,17 +36,12 @@ typedef struct ENC_STATE
 } ENC_STATE;
 
 // function prototypes
-void right_enc_callback(uint gpio, uint32_t events);
-int configure_PWM();
-float get_vel_left();
-float get_vel_right();
-void set_PWM(bool left_dir, int left_speed, bool right_dir, int right_speed);
 
+// motor PWM
+int configure_PWM();
+void set_PWM(bool left_dir, int left_speed, bool right_dir, int right_speed);
 // encoders
 void encoder_update(ENC_STATE *encoder);
 bool enc_timer_callback(repeating_timer_t *rt);
-
-int64_t getEncCounter();
-
 
 #endif
