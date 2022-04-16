@@ -167,18 +167,17 @@ int main()
 
     // give everything time to turn on
     sleep_ms(2000);
-
     // configure UART for GPS
-    status = configure_UART(UART_ID_GPS,
-                            BAUD_RATE_GPS,
-                            UART_TX_PIN_GPS, UART_RX_PIN_GPS,
-                            DATA_BITS_GPS, STOP_BITS_GPS, PARITY_GPS,
-                            on_UART_GPS_rx, 1);
-    if (status)
-    {
-        printf("$ERR Failed to initialize UART for GPS.\n");
-        // return EXIT_FAILURE;
-    }
+    // status = configure_UART(UART_ID_GPS,
+    //                         BAUD_RATE_GPS,
+    //                         UART_TX_PIN_GPS, UART_RX_PIN_GPS,
+    //                         DATA_BITS_GPS, STOP_BITS_GPS, PARITY_GPS,
+    //                         on_UART_GPS_rx, 1);
+    // if (status)
+    // {
+    //     printf("$ERR Failed to initialize UART for GPS.\n");
+    //     // return EXIT_FAILURE;
+    // }
 
     // // configure UART for LORA
     // status = configure_UART(UART_ID_LORA,
@@ -199,12 +198,12 @@ int main()
     // multicore_launch_core1(comm_run); 
 
     // configure PWM for motor controller
-    status = configure_PWM();
-    if (status)
-    {
-        printf("$ERR Failed to configure PWM.\n");
-        return EXIT_FAILURE;
-    }
+    // status = configure_PWM();
+    // if (status)
+    // {
+    //     printf("$ERR Failed to configure PWM.\n");
+    //     return EXIT_FAILURE;
+    // }
 
     // configure encoders
     // configure GPIO for encoders
@@ -233,18 +232,19 @@ int main()
     int hz = 1000;
     repeating_timer_t timer;
     // negative timeout means exact delay (rather than delay between callbacks)
-    if (!add_repeating_timer_us(-1000000 / hz, enc_timer_callback, &encoders, &timer)) {
-        printf("Failed to add timer\n");
-        return EXIT_FAILURE;
-    }
+    // if (!add_repeating_timer_us(-1000000 / hz, enc_timer_callback, &encoders, &timer)) {
+    //     printf("Failed to add timer\n");
+    //     return EXIT_FAILURE;
+    // }
 
     hz = 20;    // loop rate
     // spin
     while (1)
     {
         // provide encoder updates (tickCounts should be updated by timer)
-        printf("$ENC 1 %d 2 %d \n", enc1.tickCount, enc2.tickCount);
-
+        // printf("$ENC 1 %d 2 %d \n", enc1.tickCount, enc2.tickCount);
+        sleep_ms(20000);
+        queue_try_add(&transmit_queue, "state 0.0 0.0 0.0 10.0 10.0 5.0 ");
         // check if LoRa data is available to process
         // if (queue_try_remove(&receive_queue, received_data)) 
         // {

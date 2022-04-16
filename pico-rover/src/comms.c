@@ -90,7 +90,7 @@ void protocol(STATE *state, char *in, char *out)
                     printf("CORE 1: RECEIVED DATA: %s\n", data);
                     strcat(strcat(out, " "), data);
                 }
-            } else if (strcmp(flag, "$CMD") == 0) {
+            } else if (strcmp(flag, "CMD") == 0) {
                 if(queue_try_add(&receive_queue, in)) printf("CORE 1: SENT DATA\n");
                 strcpy(out, "ACK");
                 if (queue_try_remove(&transmit_queue, data)) 
@@ -343,7 +343,7 @@ void comm_run()
                 // send message
                 msgTx(&state, tx_buffer);
                 // start timeout timer
-                timer = make_timeout_time_ms(5000);
+                timer = make_timeout_time_ms(7000);
             }
         } else {
             // check for timeout
@@ -358,7 +358,7 @@ void comm_run()
                     // retransmit last message
                     msgTx(&state, tx_buffer);
                     // restart timer
-                    timer = make_timeout_time_ms(10000);
+                    timer = make_timeout_time_ms(7000);
                 }
             }
         }
