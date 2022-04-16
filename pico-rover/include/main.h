@@ -1,6 +1,6 @@
 /**
  * @file main.h
- * @author Wesley Fletcher (wkfletcher@knights.ucf.com)
+ * @author Wesley Fletcher (wkfletcher@knights.ucf.edu)
  * @brief Function prototypes for the "main" program to be loaded onto the Pico
  * @version 0.1
  * @date 2022-03-07
