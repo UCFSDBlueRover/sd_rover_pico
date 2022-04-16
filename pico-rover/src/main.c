@@ -111,7 +111,8 @@ int handle_input(char *in)
         pwm2 = atoi(token);                 // PWM2
 
         // debug
-        printf("DIR1: %d\nPWM1: %d\nDIR2: %d\nPWM2: %d\n", dir1, pwm1, dir2, pwm2);
+        // printf("DIR1: %d\nPWM1: %d\nDIR2: %d\nPWM2: %d\n", dir1, pwm1, dir2, pwm2);
+        
         // set PWM using vars from message
         set_PWM(dir1, pwm1, dir2, pwm2);
         return EXIT_SUCCESS;
