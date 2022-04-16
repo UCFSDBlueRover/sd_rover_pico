@@ -225,7 +225,7 @@ int main()
 
     // STDIN/STDOUT IO
     char ch;
-    int idx;
+    int idx = 0;
     char in_string[255];
     char out_string[255];
     char received_data[LORA_SIZE];
