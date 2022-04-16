@@ -16,17 +16,16 @@
 #include "../include/config.h"
 
 /**
- * @brief RX interrupt for GPS over UART, blocks until message is terminated
+ * @brief RX interrupt for GPS over UART, blocks until message is terminated. Prints received data, sending it across the serial connection.
  * 
  */
 void on_UART_GPS_rx()
 {
-    // printf("HERE");
     char buffer[83];    // max size of NMEA sentence is 82 bytes (according to NMEA-0183) + 1 for termination (\0)
     int idx = 0;
+    
     while (uart_is_readable(UART_ID_GPS)) // TODO: replace with timeout version?
     {
-        // printf("HERE 2");
         uint8_t ch = uart_getc(UART_ID_GPS); 
         while (ch != ENDSTDIN)
         {
@@ -37,92 +36,26 @@ void on_UART_GPS_rx()
             {
                 buffer[idx] = 0; // terminate the string
                 idx = 0;    // reset index
-                // printf("This is the string I received: %s\n", in_string);
                 
                 break;
             }
             ch = uart_getc(UART_ID_GPS);
-
         }
-        // printf("HERE 3");
         // don't send empty buffers
         if (strlen(buffer) > 1)
         {
             printf("$GPS %s\n", buffer);
         }
     }
-
-    // printf("HERE 4");
-}
-
-
-static absolute_time_t tach_interrupt_stamp = 0;
-static int revolutions = 0;
-
-void tachometer_callback(uint gpio, uint32_t events)
-{
-    
-    absolute_time_t interrupt_time = get_absolute_time();
-    int64_t time_diff = absolute_time_diff_us(tach_interrupt_stamp, interrupt_time);
-
-    if (time_diff < 50000)
-    {
-        return;
-    }
-
-    printf("%lld\n", (float)time_diff / 1000000.0);
-
-    tach_interrupt_stamp = get_absolute_time();
 }
 
 /**
- * @brief RX interrupt for LORA over UART, blocks until message is terminated
+ * @brief RX interrupt for LORA over UART, blocks until message is terminated. Not actually used.
  * 
  */
 void on_UART_LORA_rx()
 {
-    // // larger than the max size of a LoRa transmission
-    char buffer[255];
-    int idx = 0;
-    int status;
-    char ch;
-    
-    // 0 if no bytes available, otherwise the size
-    // int size = uart_is_readable(UART_ID_LORA);
-    // printf("THIS IS THE SIZE I GOT RIGHT HERE, JOSH: %d\n", size);
-    // if (size)
-    // {
-    //     // make sure to completely read the UART before allowing interrupts
-    //     uart_read_blocking(UART_ID_LORA, buffer, LORA_SIZE);
-    //     printf("Received this buffer from LORA: %s\n", buffer);
-    //     handle_input(buffer);
-    // }
-    // printf("$LRA %s\n", buffer);
-
-    ch = getchar_timeout_us(0);
-    while (ch != ENDSTDIN)
-        {
-            buffer[idx++] = ch;
-
-            // if the string ends or we run out of space, we're done with this string
-            if (ch == CR || ch == NL || idx == (sizeof(buffer)-1))
-            {
-                buffer[idx] = 0; // terminate the string
-                idx = 0;    // reset index
-                // printf("This is the string I received: %s\n", buffer);
-                
-                status = handle_input(buffer);
-                if (status)
-                {
-                    printf("Failed to process string: %s\n", buffer);
-                }
-                break;
-            }
-
-            ch = getchar_timeout_us(0);
-    }
-    // printf("$LRA %s\n", buffer);
-
+    return;
 }
 
 /**
@@ -136,16 +69,14 @@ int handle_input(char *in)
     // for tokenizing input string
     char * delim = " ";
     char * token;
-
     int seq;
 
     // for $MTR commands
-    bool dir1, dir2;
-    int8_t pwm1, pwm2;
+    bool dir1 = 0, dir2 = 0;
+    int8_t pwm1 = 0, pwm2 = 0;
 
     // tokenize string (strtok modifies the original string)
     token = strtok(in, delim);
-    // printf("Got this as first token: %s\n", token);
 
     // "switch" on first token == message type
     // ACK messages are used for confirmation that sent data was received
@@ -179,7 +110,9 @@ int handle_input(char *in)
         token = strtok(NULL, delim);
         pwm2 = atoi(token);                 // PWM2
 
+        // debug
         printf("DIR1: %d\nPWM1: %d\nDIR2: %d\nPWM2: %d\n", dir1, pwm1, dir2, pwm2);
+        // set PWM using vars from message
         set_PWM(dir1, pwm1, dir2, pwm2);
         return EXIT_SUCCESS;
     }
@@ -214,7 +147,7 @@ int handle_input(char *in)
 /**
  * @brief Program entrypoint.
  * 
- * @return int 
+ * @return int success/failure
  */
 int main() 
 {
@@ -232,6 +165,7 @@ int main()
     char sent_data[LORA_SIZE] = "data";
     int status;
 
+    // give everything time to turn on
     sleep_ms(2000);
 
     // configure UART for GPS
@@ -246,23 +180,23 @@ int main()
         // return EXIT_FAILURE;
     }
 
-    // configure UART for LORA
-    status = configure_UART(UART_ID_LORA,
-                            BAUD_RATE_LORA,
-                            UART_TX_PIN_LORA, UART_RX_PIN_LORA,
-                            DATA_BITS_LORA, STOP_BITS_LORA, PARITY_LORA,
-                            on_UART_LORA_rx, 0);
-    if (status)
-    {
-        printf("$ERR Failed to initialize UART for LoRa.\n");
-        // return EXIT_FAILURE;
-    }
+    // // configure UART for LORA
+    // status = configure_UART(UART_ID_LORA,
+    //                         BAUD_RATE_LORA,
+    //                         UART_TX_PIN_LORA, UART_RX_PIN_LORA,
+    //                         DATA_BITS_LORA, STOP_BITS_LORA, PARITY_LORA,
+    //                         on_UART_LORA_rx, 0);
+    // if (status)
+    // {
+    //     printf("$ERR Failed to initialize UART for LoRa.\n");
+    //     // return EXIT_FAILURE;
+    // }
 
-    // init inter-core queues for LoRa communication
-    queue_init(&receive_queue, LORA_SIZE, 5);
-    queue_init(&transmit_queue, LORA_SIZE, 5);
-    // Start core 1 - Do this before any interrupt configuration
-    multicore_launch_core1(comm_run); 
+    // // init inter-core queues for LoRa communication
+    // queue_init(&receive_queue, LORA_SIZE, 5);
+    // queue_init(&transmit_queue, LORA_SIZE, 5);
+    // // Start core 1 - Do this before any interrupt configuration
+    // multicore_launch_core1(comm_run); 
 
     // configure PWM for motor controller
     status = configure_PWM();
@@ -304,19 +238,7 @@ int main()
         return EXIT_FAILURE;
     }
 
-    // configure GPIO for tachometer
-    // gpio_set_function(28, GPIO_FUNC_SIO); // pin 34 == GPIO26
-    // gpio_set_dir(28, GPIO_IN);
-    // gpio_set_irq_enabled_with_callback(28, GPIO_IRQ_EDGE_FALL, true, &tachometer_callback);
-
-    // configure encoder interrupts
-    // gpio_set_irq_enabled_with_callback(20, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &right_enc_callback);
-    // gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true);
-    // configure status LED
-    // gpio_init(LED_PIN);
-    // gpio_set_dir(LED_PIN, GPIO_OUT);
-
-    hz = 10;
+    hz = 20;    // loop rate
     // spin
     while (1)
     {
@@ -324,14 +246,14 @@ int main()
         printf("$ENC 1 %d 2 %d \n", enc1.tickCount, enc2.tickCount);
 
         // check if LoRa data is available to process
-        if (queue_try_remove(&receive_queue, received_data)) 
-        {
-            // everything from CORE 1 is a $CMD
-            // printf("CORE 0 RECEIVED DATA: %s\n", received_data); 
-            char cmd[LORA_SIZE] = "$CMD ";
-            strcat(cmd, received_data);
-            handle_input(cmd);
-        }
+        // if (queue_try_remove(&receive_queue, received_data)) 
+        // {
+        //     // everything from CORE 1 is a $CMD
+        //     // printf("CORE 0 RECEIVED DATA: %s\n", received_data); 
+        //     char cmd[LORA_SIZE] = "$CMD ";
+        //     strcat(cmd, received_data);
+        //     handle_input(cmd);
+        // }
         // if (!queue_try_add(&transmit_queue, sent_data)) 
         // {
         //     printf("$ERR Failed to add data to transmit queue: %s\n", sent_data); 
@@ -357,11 +279,13 @@ int main()
                 }
                 break;
             }
-
             ch = getchar_timeout_us(0);
         }
 
-        sleep_ms(1000 / hz);
-        // tight_loop_contents();
+        sleep_ms(1000 / hz);    // set loop rate; best effort
     }
+
+    printf("ENDING PICO EXECUTION\n");
+    return EXIT_SUCCESS;
+
 }
