@@ -1,3 +1,14 @@
+/**
+ * @file config.c
+ * @author Wesley Fletcher (wkfletcher@knights.ucf.com)
+ * @brief Contains configuration functions to declutter main()
+ * @version 0.1
+ * @date 2022-04-16
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include "config.h"
 
 #include <stdlib.h>
@@ -13,7 +24,7 @@
  * @param STOP_BITS stopbits
  * @param PARITY    parity
  * @param IRQ_FUN   the IRQ handler (function to call when something is received on UART)
- * @return status 
+ * @return status   EXIT_SUCCESS/EXIT_FAILURE
  */
 int configure_UART(uart_inst_t *UART_ID, uint BAUDRATE, uint TX_PIN, uint RX_PIN, uint DATA_BITS, uint STOP_BITS, uint PARITY, irq_handler_t IRQ_FUN, bool useIRQ)
 {
