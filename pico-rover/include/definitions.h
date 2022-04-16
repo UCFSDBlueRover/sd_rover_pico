@@ -1,3 +1,13 @@
+/**
+ * @file definitions.h
+ * @author Wesley Fletcher (wkfletcher@knights.ucf.edu)
+ * @brief Definintions and enums for main.c
+ * @version 0.1
+ * @date 2022-04-16
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
